@@ -1,0 +1,149 @@
+---
+título: "Lección 4: Soluciones de anotaciones"
+archivo de salida: html_document
+---
+
+## Soluciones de anotación y guardado
+
+Este documento contiene las soluciones de la actividad de anotación y guardado. Puedes usar estas soluciones para controlar tu trabajo y asegurarte de que tu código sea correcto o resolver problemas en tu código si marca errores. Si aún no completaste la actividad, te sugerimos que regreses y la termines antes de leer las soluciones.
+
+Si tienes errores, recuerda que puedes buscar ayuda en Internet y en la comunidad de RStudio:
+https://community.rstudio.com/#
+
+## Paso 1: Importar los datos
+
+Los datos de este ejemplo provienen originalmente del artículo Hotel Booking Demand Datasets (https://www.sciencedirect.com/science/article/pii/S2352340918315191), escrito por Nuno Antonio, Ana Almeida y Luis Nunes para Data in Brief, Volumen 22, febrero de 2019.
+
+Los datos fueron descargados y limpiados por Thomas Mock y Antoine Bichat para #TidyTuesday durante la semana del 11 de febrero de 2020 (https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-02-11/readme.md).
+
+Puedes aprender más sobre este conjunto de datos aquí:
+https://www.kaggle.com/jessemostipak/hotel-booking-demand
+
+Ejecuta el código que aparece debajo para cargar el archivo 'hotel_bookings.csv' en un marco de datos: 
+
+```{r}
+hotel_bookings <- read.csv("hotel_bookings.csv")
+```
+
+## Paso 2: Refrescar la memoria
+
+A esta altura, ya estás bastante familiarizado con este conjunto de datos. Pero puedes refrescar tu memoria con las funciones `head()` y `colnames()`. Ejecuta los dos bloques de código debajo para obtener una muestra de los datos y, además, tener una vista previa los nombres de todas las columnas:
+
+```{r look at data}
+head(hotel_bookings)
+```
+
+```{r look at column names}
+colnames(hotel_bookings)
+```
+
+## Paso 3: Instalar y cargar el paquete 'ggplot2' (opcional)
+
+Si todavía no instalaste y cargaste el paquete `ggplot2`, deberás hacerlo antes de poder usar la función `ggplot()`. Pero solo tienes que hacerlo una vez, no todas las veces que utilices `ggplot()`.
+
+También puedes saltearte este paso si no cerraste tu cuenta de RStudio desde que hiciste la última actividad. Si no estás seguro, puedes ejecutar el bloque de código y presionar 'cancel' si aparece el mensaje de advertencia que te dice que ya descargaste el paquete `ggplot2`.
+
+Ejecuta el bloque de código que aparece a continuación para instalar y cargar `ggplot2`. ¡Esto puede tardar unos minutos!
+
+```{r loading and installing ggplot2, echo=FALSE, message=FALSE}
+install.packages('ggplot2')
+library(ggplot2)
+```
+
+## Paso 4: Realizar anotaciones en tu gráfico
+
+A modo de recordatorio, este es el gráfico que creaste anteriormente:
+```{r faceting a plot}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = market_segment)) +
+  facet_wrap(~hotel)
+```
+
+El primer paso será agregar un título; eso es, a menudo, la primera cosa a la que las personas prestan atención cuando ven una visualización de datos por primera vez. Para agregar un título, agregarás `labs()` al final de tu comando `ggplot()` y, luego, colocarás un título allí:
+
+```{r faceting a plot with a title}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = market_segment)) +
+  facet_wrap(~hotel) +
+  labs(title="Comparison of market segments by hotel type for hotel bookings")
+```
+
+
+También es recomendable agregar otro detalle sobre cuál es el período que abarcan estos datos. Para hacerlo, necesitas averiguar de cuándo son estos datos. 
+
+Te das cuenta de que puedes usar la función `min()` en la columna de año en los datos:
+
+```{r earliest year}
+min(hotel_bookings$arrival_date_year)
+```
+ 
+Y la función `max()`:
+```{r latest year}
+max(hotel_bookings$arrival_date_year)
+```
+
+Pero necesitarás guardarlas como variables para poder usarlas fácilmente en tu etiquetado: el siguiente bloque de código crea dos de esas variables: 
+```{r latest date}
+mindate <- min(hotel_bookings$arrival_date_year)
+maxdate <- max(hotel_bookings$arrival_date_year)
+```
+
+Ahora, agregarás un subtítulo usando `subtitle=` en la función `labs()`. Luego, puedes usar la función `paste0()` para usar tus variables recién creadas en tus etiquetas. Esto es muy útil, ya que si los datos se actualizan y se agregan datos más recientes, tú no tienes que modificar el código que aparece a continuación porque las variables son dinámicas:
+
+```{r city bar chart with timeframe}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = market_segment)) +
+  facet_wrap(~hotel) +
+  labs(title="Comparison of market segments by hotel type for hotel bookings",
+       subtitle=paste0("Data from: ", mindate, " to ", maxdate))
+```
+
+Decides modificar el `subtitle` (subtítulo) para que se transforme en una `caption` (leyenda), que aparecerá en la esquina inferior derecha.
+
+```{r city bar chart with timeframe as caption}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = market_segment)) +
+  facet_wrap(~hotel) +
+  labs(title="Comparison of market segments by hotel type for hotel bookings",
+       caption=paste0("Data from: ", mindate, " to ", maxdate))
+```
+
+Ahora lo recomendable es que limpies las etiquetas del eje x e y para asegurarte de que sean realmente claras. Para hacerlo, puedes agregar texto a la función `labs()` y usar `x=` e `y=`. Siéntete libre de modificar el texto de la etiqueta y jugar con él:
+
+```{r city bar chart with x and y axis}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = market_segment)) +
+  facet_wrap(~hotel) +
+  labs(title="Comparison of market segments by hotel type for hotel bookings",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x="Market Segment",
+       y="Number of Bookings")
+```
+
+## Paso 5: Guardar tu gráfico
+
+La función `ggsave()` se usó para guardar el último gráfico generado; entonces, si ejecutaste algo después de ejecutar el bloque de código de arriba, vuelve a ejecutar ese bloque de código. 
+
+Luego, ejecuta el siguiente bloque de código para guardar ese gráfico como un archivo .png llamado `city_payment_chart`, que deja en claro a tus interesados el contenido del archivo .png. Ahora, deberías poder encontrar este archivo en tu pestaña de 'Files' en la esquina inferior derecha de tu pantalla. ¡Échale un vistazo!
+
+```{r save your plot}
+ggsave('hotel_booking_chart.png')
+```
+
+## Cuestionario de práctica
+¿Cuáles son las medidas predeterminadas en las que `ggsave()` guardó tu imagen?
+
+A: 5x5
+B: 10x10
+C: 7x7
+D: 25x25
+
+Respuesta: C. Las medidas predeterminadas de esta imagen de ggsave() son 7x7. Puedes ver estas dimensiones indicadas después de que ejecutes el bloque de código. 
+
+Si quisieras que tu gráfico sea más grande y más rectangular para adecuarse a la presentación de diapositivas, podrías especificar la altura y el ancho de tu .png en el comando `ggsave()`. Edita el bloque de código que aparece debajo para crear una imagen .png de 16x8. 
+
+```{r save your plot}
+ggsave('hotel_booking_chart.png',
+       width=16,
+       height=8)
+```

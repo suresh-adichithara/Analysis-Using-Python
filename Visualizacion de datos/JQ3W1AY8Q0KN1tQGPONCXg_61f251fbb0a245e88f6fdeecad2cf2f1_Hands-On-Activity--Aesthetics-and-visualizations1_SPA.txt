@@ -1,0 +1,147 @@
+---
+título: 'Lección 3: Estética y visualizaciones'
+archivo de salida: html_document
+---
+
+## Contexto de esta actividad
+En esta actividad, repasarás un escenario y seguirás aplicando tus conocimientos de visualización de datos con ggplot2. Aprenderás más sobre las funciones estéticas de las visualizaciones y cómo personalizarlas según criterios específicos. 
+
+A lo largo de esta actividad, también tendrás la oportunidad de practicar escribir tu propio código haciendo cambios en los bloques de código tú mismo. Si encuentras un error o te trabas, siempre puedes consultar el archivo .rmd Lesson3_Aesthetics_Solutions en la carpeta "Solutions" bajo "Week 4" para ver el código correcto completo. 
+
+## El escenario
+En este ejemplo, eres un analista de datos júnior que trabaja para la misma empresa de reservas hoteleras de antes. La última vez, creaste algunas visualizaciones simples con `ggplot2` para comunicarles a tus interesados algunas conclusiones rápidas sobre tus datos. Ahora, estás interesado en crear visualizaciones que destacan diferentes aspectos de los datos para presentárselas a tu interesado. Vas a ahondar en lo que ya aprendiste sobre `ggplot2` y crear nuevos tipos de visualizaciones como gráficos de barras.  
+
+## Paso 1: Importar los datos
+Si no saliste de RStudio desde que importaste estos datos la última vez, puedes saltearte estos pasos. Sin embargo, volver a ejecutar estos bloques de código no afectará tu consola si quieres ejecutarlos por las dudas.  
+
+Ejecuta el código que aparece debajo para cargar el archivo 'hotel_bookings.csv' en un marco de datos: 
+
+Si esta línea provoca un error, copia la línea setwd("projects/Course 7/Week 4") antes de ella. 
+
+```{r load data}
+hotel_bookings <- read.csv("hotel_bookings.csv")
+```
+
+## Paso 2: Refrescar la memoria
+
+A esta altura, ya estás bastante familiarizado con este conjunto de datos. Pero puedes refrescar tu memoria con las funciones `head()` y `colnames()`. Ejecuta los dos bloques de código debajo para obtener una muestra de los datos y, además, tener una vista previa los nombres de todas las columnas:
+
+```{r look at data}
+head(hotel_bookings)
+```
+
+```{r look at column names}
+colnames(hotel_bookings)
+```
+
+## Paso 3: Instalar y cargar el paquete 'ggplot2' (opcional)
+
+Si todavía no instalaste y cargaste el paquete `ggplot2`, deberás hacerlo antes de poder usar la función `ggplot()`. Pero solo tienes que hacerlo una vez, no todas las veces que utilices `ggplot()`.
+
+También puedes saltearte este paso si no cerraste tu cuenta de RStudio desde que hiciste la última actividad. Si no estás seguro, puedes ejecutar el bloque de código y presionar 'cancel' si aparece el mensaje de advertencia que te dice que ya descargaste el paquete `ggplot2`.
+
+Ejecuta el bloque de código que aparece a continuación para instalar y cargar `ggplot2`. ¡Esto puede tardar unos minutos!
+
+```{r loading and installing ggplot2, echo=FALSE, message=FALSE}
+install.packages('ggplot2')
+library(ggplot2)
+```
+
+## Paso 4: Hacer un gráfico de barras
+
+Tu interesado está pensando en desarrollar promociones con base en diferentes distribuciones de reservas, pero primero necesita saber cuántas de las transacciones se producen por cada tipo de distribución.
+
+Le puedes indicar a `ggplot()` qué tipo de gráfico quieres crear usando el argumento `geom_`. 
+
+Anteriormente, usaste `geom_point` para hacer un diagrama de dispersión que comparaba el tiempo de antelación con el número de hijos. Ahora, usarás `geom_bar` para hacer un gráfico de barras en este bloque de código: 
+
+```{r example chart}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = distribution_channel))
+```
+Anteriormente, creaste diagramas de dispersión con ggplot2. Este bloque de código crea un gráfico de barra con 'distribution_channel' en el eje x y 'count' en el eje y. Existen datos para canales de distribución corporativos, directos, Sistema de distribución global, Agencia de viajes/Operador de viajes e indefinidos. 
+
+## Cuestionario de práctica
+Usa el gráfico de barras que creaste para responder esta pregunta: ¿qué tipo de distribución tiene el número más alto de reservas? Marca tu respuesta al cuestionario de práctica en Coursera posteriormente.
+
+A: Agencia de viajes/Operador de viajes
+B: Directa
+C: Sistema de distribución global
+D: Corporativa
+
+## Paso 5: Adentrarse más en los gráficos de barras
+
+Después de explorar tu gráfico de barras, tu interesado tiene más preguntas. Ahora quiere saber si el número de reservas para cada tipo de distribución es diferente dependiendo de si se realizó un depósito o de a qué mercado representan. 
+
+Intenta modificar el código que aparece debajo para responder la pregunta sobre depósitos agregando 'fill=deposit_type' después de 'x = distribution_channel':
+
+```{r pressure, echo=FALSE}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = distribution_channel, ))
+```
+Este bloque de código también crea un gráfico de barra con 'distribution_channel' en el eje x y 'count' en el eje y. Pero también incluye datos de la columna 'deposit_type' como secciones con código de color de cada barra. Hay una leyenda que explica qué representa cada color en el lado derecho de la visualización. 
+
+Ahora intenta agregar 'fill=market_segment' a este bloque de código en vez de 'fill=deposit_type':
+
+```{r pressure, echo=FALSE}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = distribution_channel, ))
+```
+Este gráfico de barras es similar al gráfico anterior, salvo que los datos de 'market_segment' se registran en las secciones con código de color de cada barra. 
+
+## Paso 6: Facetas a granel
+
+Después de repasar los nuevos gráficos, tu interesado te pide que crees gráficos separados para cada tipo de depósito y segmento de mercado para ayudarlo a comprender las diferencias con mayor claridad.
+
+Tú sabes que la función `facet_` puede hacerlo con mucha rapidez.
+
+Agrega 'deposit_type' después del símbolo '~' en el bloque de código que aparece debajo para crear un gráfico diferente para cada tipo de depósito:
+```{r creating a plot}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = distribution_channel)) +
+  facet_wrap(~ )
+```
+
+Este bloque de código crea tres gráficos de barra correspondientes a los tipos de depósito 'no_deposit', non_refund' y 'refundable'. Observas que es difícil leer las etiquetas del eje x aquí, por lo que agregas un trozo de código al final que rota el texto 45 grados para hacerlo más fácil de leer. 
+
+Pruébalo debajo:
+```{r creating a plot with rotated labels}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = distribution_channel)) +
+  facet_wrap(~deposit_type) +
+  theme(axis.text.x = element_text(angle = 45))
+```
+Este bloque de código crea un gráfico de barras similar al bloque anterior, pero ahora las etiquetas del eje x con los diferentes canales de distribución quedan más claras.
+
+Puedes usar la misma sintaxis para crear un gráfico diferente para cada segmento de mercado:
+```{r creating a plot}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = distribution_channel)) +
+  facet_wrap(~market_segment) +
+  theme(axis.text.x = element_text(angle = 45))
+```
+
+La función `facet_grid` hace algo similar. La principal diferencia es que `facet_grid` incluye gráficos aunque estén vacíos. Ejecuta el bloque de código que aparece debajo para comprobarlo:
+
+```{r creating a plot}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = distribution_channel)) +
+  facet_grid(~deposit_type) +
+  theme(axis.text.x = element_text(angle = 45))
+```
+Ahora deberías tener tres gráficos de barras-- pero observa que el gráfico de 'Refundable' tiene muchos menos datos trazados que los otros dos. 
+
+Ahora, puedes colocar todo esto en un gráfico y explorar las diferencias por tipo de depósito y segmento de mercado.
+
+Ejecuta el bloque de código que aparece debajo para averiguarlo; observa cómo el carácter ~ se usa antes de las variables por las que se divide el gráfico: 
+```{r creating a plot}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = distribution_channel)) +
+  facet_wrap(~deposit_type~market_segment) +
+  theme(axis.text.x = element_text(angle = 45))
+```
+
+Es posible que estos gráficos sean un poco abrumadores y difíciles de leer, pero pueden ser útiles si estás explorando tus datos a través de visualizaciones.  
+
+## Conclusión de la actividad
+El paquete `ggplot2` te permite crear diversas visualizaciones en `R`, desde simples diagramas de dispersión hasta gráficos de barras complicados y multifacéticos. Puedes practicar estas destrezas modificando los bloques de código en el archivo rmd o usar este código como punto de partida en la consola de tu propio proyecto. Mientras sigues explorando los argumentos estéticos en `ggplot2`, analiza cómo podrías usar visualizaciones para sacar conclusiones y hacer observaciones sobre otros tipos de datos en el futuro. 

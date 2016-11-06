@@ -1,0 +1,176 @@
+---
+título: 'Lección 4: Anotar y guardar'
+archivo de salida: html_document
+---
+
+## Contexto de esta actividad
+
+En esta actividad, repasarás un escenario y practicarás agregar anotaciones a una visualización de datos con ggplot2. También aprenderás cómo guardar imágenes de visualizaciones de ggplot2 para poder agregarlas directamente a las presentaciones. 
+
+A lo largo de esta actividad, también tendrás la oportunidad de practicar escribir tu propio código haciendo cambios en los bloques de código tú mismo. Si encuentras un error o te trabas, siempre puedes consultar el archivo .rmd Lesson4_Annotations_Solutions en la carpeta "Solutions" bajo "Week 4" para ver el código correcto completo. 
+
+## El escenario
+
+Como analista de datos en una empresa de reservas hoteleras, has estado creando visualizaciones en `R` con el paquete `ggplot2` para compartir conclusiones sobre los datos con los interesados. Después de crear una serie de visualizaciones usando estética y filtros de `ggplot()` y `ggplot2`, tu interesado te pide que agregues anotaciones a tus visualizaciones para ayudar a explicar tus resultados en una presentación. Afortunadamente, `ggplot2` tiene funciones de anotación integradas.  
+
+## Paso 1: Importar los datos
+
+Si no saliste de RStudio desde que importaste estos datos la última vez, puedes saltearte estos pasos. Sin embargo, volver a ejecutar estos bloques de código no afectará tu consola si quieres ejecutarlos por las dudas.  
+
+Si esta línea provoca un error, copia la línea setwd("projects/Course 7/Week 4") antes de ella.
+
+Ejecuta el código que aparece debajo para cargar el archivo 'hotel_bookings.csv' en un marco de datos: 
+
+```{r load data}
+hotel_bookings <- read.csv("hotel_bookings.csv")
+```
+
+## Paso 2: Refrescar la memoria
+
+A esta altura, ya estás bastante familiarizado con este conjunto de datos. Pero puedes refrescar tu memoria con las funciones `head()` y `colnames()`. Ejecuta los dos bloques de código debajo para obtener una muestra de los datos y, además, tener una vista previa los nombres de todas las columnas:
+
+```{r look at data}
+head(hotel_bookings)
+```
+
+```{r look at column names}
+colnames(hotel_bookings)
+```
+
+## Paso 3: Instalar y cargar los paquetes 'ggplot2' y 'tidyverse' (opcional)
+
+Si todavía no instalaste y cargaste el paquete `ggplot2`, deberás hacerlo antes de poder usar la función `ggplot()`. Pero solo tienes que hacerlo una vez, no todas las veces que utilices `ggplot()`.
+
+También puedes saltearte este paso si no cerraste tu cuenta de RStudio desde que hiciste la última actividad. Si no estás seguro, puedes ejecutar el bloque de código y presionar 'cancel' si aparece el mensaje de advertencia que te dice que ya descargaste el paquete `ggplot2`.
+
+Ejecuta el bloque de código que aparece a continuación para instalar y cargar `ggplot2`. ¡Esto puede tardar unos minutos!
+
+```{r loading and installing ggplot2, echo=FALSE, message=FALSE}
+install.packages('ggplot2')
+library(ggplot2)
+```
+
+Si no instalaste y cargaste tidyverse en esta sesión de RStudio, puedes ejecutar el bloque de código que aparece a continuación. ¡Esto puede tardar unos minutos!
+
+```{r install and download tidyverse}
+install.packages('tidyverse')
+library(tidyverse)
+```
+
+## Paso 4: Realizar anotaciones en tu gráfico
+
+Tu interesado te dice que les gustaría que tú compartieras la visualización desglosando el tipo de pago por ciudad porque ayudará a determinar cómo la empresa dirige las promociones en el futuro. Te piden que crees una versión limpia y etiquetada y la guardes como un archivo .png para que ellos la incluyan en una presentación. 
+
+A modo de recordatorio, este es el gráfico que creaste anteriormente:
+```{r faceting a plot}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = market_segment)) +
+  facet_wrap(~hotel)
+```
+Esto crea dos gráficos de barras: uno para datos de 'city_hotel' y uno para datos de 'resort_hotel'. El eje x es 'market_segment' (segmento de mercado) y el eje y es 'count' (recuento) para ambos gráficos. 
+
+En esta visualización, no queda claro de dónde provienen los datos, cuál es la conclusión clave o ni siquiera qué muestran los datos. Para explicar todo eso, puedes aprovechar las anotaciones en `ggplot2`.
+
+El primer paso será agregar un título; eso es, a menudo, la primera cosa a la que las personas prestan atención cuando ven una visualización de datos por primera vez. Para agregar un título, agregarás `labs()` al final de tu comando `ggplot()` y, luego, colocarás un título allí. Agrega un título descriptivo al bloque de código que aparece a continuación: 
+
+```{r faceting a plot with a title}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = market_segment)) +
+  facet_wrap(~hotel) +
+  labs(title="")
+```
+
+Este bloque de código generará el mismo gráfico que antes, pero ahora incluye un título para explicar con mayor claridad la visualización de datos a tu audiencia. 
+
+También es recomendable agregar otro detalle sobre cuál es el período que abarcan estos datos. Para hacerlo, necesitas averiguar de cuándo son estos datos. 
+
+Te das cuenta de que puedes usar la función `min()` en la columna de año en los datos:
+
+```{r earliest year}
+min(hotel_bookings$arrival_date_year)
+```
+ 
+Y la función `max()`:
+```{r latest year}
+max(hotel_bookings$arrival_date_year)
+```
+
+Pero necesitarás guardarlas como variables para poder usarlas fácilmente en tu etiquetado: el siguiente bloque de código crea dos de esas variables: 
+```{r latest date}
+mindate <- min(hotel_bookings$arrival_date_year)
+maxdate <- max(hotel_bookings$arrival_date_year)
+```
+
+Ahora, agregarás un subtítulo usando `subtitle=` en la función `labs()`. Luego, puedes usar la función `paste0()` para usar tus variables recién creadas en tus etiquetas. Esto es muy útil, ya que si los datos se actualizan y se agregan datos más recientes, tú no tienes que modificar el código que aparece a continuación porque las variables son dinámicas:
+
+```{r city bar chart with timeframe}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = market_segment)) +
+  facet_wrap(~hotel) +
+  theme(axis.text.x = element_text(angle = 45)) +
+  labs(title="Comparison of market segments by hotel type for hotel bookings",
+       subtitle=paste0("Data from: ", mindate, " to ", maxdate))
+```
+Este bloque de código agregará el subtítulo 'Data from: 2015 to 2017' debajo del título que le agregaste antes al gráfico. 
+
+Te percatas de que quizás este gráfico esté mostrando los detalles técnicos con demasiada prominencia. No quieres que esa sea la segunda cosa que las personas noten durante la presentación. Decides modificar el `subtitle` (subtítulo) para que se transforme en una `caption` (leyenda), que aparecerá en la esquina inferior derecha.
+
+```{r city bar chart with timeframe as caption}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = market_segment)) +
+  facet_wrap(~hotel) +
+  theme(axis.text.x = element_text(angle = 45)) +
+  labs(title="Comparison of market segments by hotel type for hotel bookings",
+       caption=paste0("Data from: ", mindate, " to ", maxdate))
+```
+Este bloque de código hace una leve modificación a la visualización que creaste en el último bloque; ahora el subtítulo "data from: 2015 to 2017" está en la esquina inferior derecha. 
+
+Ahora lo recomendable es que limpies las etiquetas del eje x e y para asegurarte de que sean realmente claras. Para hacerlo, puedes agregar texto a la función `labs()` y usar `x=` e `y=`. Siéntete libre de modificar el texto de la etiqueta y jugar con él:
+
+```{r city bar chart with x and y axis}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = market_segment)) +
+  facet_wrap(~hotel) +
+  theme(axis.text.x = element_text(angle = 45)) +
+  labs(title="Comparison of market segments by hotel type for hotel bookings",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x="Market Segment",
+       y="Number of Bookings")
+```
+Entonces tienes la visualización de datos de antes, pero ahora las etiquetas del eje x y el eje y han sido modificadas de 'market_segment' y 'count' a 'Market Segment' y 'Number of Bookings' para que el gráfico sea más claro. 
+
+## Paso 5: Guardar tu gráfico
+
+Ahora es momento de guardar lo que acabas de crear para poderlo compartir fácilmente con los interesados.
+
+¡Puedes usar la función `ggsave()` para hacer justamente eso! Guardará tu imagen como un 7x7 en la ruta de archivo que escribas de manera predeterminada, lo que hace que sea sencillo exportar tus gráficos de R.  
+
+La función `ggsave()` en el bloque de código que aparece debajo guardará el último gráfico generado; entonces, si ejecutaste algo después de ejecutar el bloque de código de arriba, vuelve a ejecutar ese bloque de código. 
+
+Luego, ejecuta el siguiente bloque de código para guardar ese gráfico como un archivo .png llamado `hotel_booking_chart`, que deja en claro a tus interesados el contenido del archivo .png. Ahora, deberías poder encontrar este archivo en tu pestaña de 'Files' en la esquina inferior derecha de tu pantalla. ¡Échale un vistazo!
+
+```{r save your plot}
+ggsave('hotel_booking_chart.png')
+```
+
+## Cuestionario de práctica
+¿Cuáles son las medidas predeterminadas en las que guarda `ggsave()` las imágenes? Anota tu respuesta y responde en la plataforma de Coursera.
+
+A: 5x5
+B: 10x10
+C: 7x7
+D: 25x25
+
+Si quisieras que tu gráfico sea más grande y más rectangular para adecuarse a la presentación de diapositivas, podrías especificar la altura y el ancho de tu .png en el comando `ggsave()`. Edita el bloque de código que aparece debajo para crear una imagen .png de 16x8. 
+
+```{r save your plot}
+ggsave('hotel_booking_chart.png',
+       width=,
+       height=)
+```
+
+## Conclusión de la actividad
+
+Ahora que terminaste de crear y exportar una visualización de datos con anotaciones en `ggplot2`, puedes compartir lo que creaste con interesados clave para darles información sobre los resultados de tus datos. Estas destrezas te permiten crear, anotar y compartir tus visualizaciones de datos directamente desde el espacio de tu consola `R`. Puedes practicar estas destrezas modificando los bloques de código en el archivo rmd o usar este código como punto de partida en la consola de tu propio proyecto. Seguirás aprendiendo más acerca de funciones de `ggplot2` en este curso, pero con las destrezas que ya has estado practicando, podrás generar gráficos, utilizar funciones estéticas, aplicar filtros y crear anotaciones para explicar tus datos. 
+
+Cuando completes esta actividad, guárdala haciendo clic en la pestaña Archivo en la esquina superior izquierda de la consola RStudio y, luego, seleccionando Guardar. Usarás este documento (o cualquier otra actividad de R que hayas completado y guardado en este curso) para una próxima actividad.

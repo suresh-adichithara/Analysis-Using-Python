@@ -1,0 +1,119 @@
+---
+título: "Lección 3: Soluciones de estética"
+archivo de salida: html_document
+---
+
+## Soluciones de la actividad de estética y visualizaciones
+
+Este documento contiene las soluciones de la actividad de estética y visualizaciones. Puedes usar estas soluciones para controlar tu trabajo y asegurarte de que tu código sea correcto o resolver problemas en tu código si marca errores. Si aún no completaste la actividad, te sugerimos que regreses y la termines antes de leer las soluciones.
+
+Si tienes errores, recuerda que puedes buscar ayuda en Internet y en la comunidad de RStudio:
+https://community.rstudio.com/#
+
+## Paso 1: Importar los datos
+Si no saliste de RStudio desde que importaste estos datos la última vez, puedes saltearte estos pasos. Sin embargo, volver a ejecutar estos bloques de código no afectará tu consola si quieres ejecutarlos por las dudas.  
+
+Los datos de este ejemplo provienen originalmente del artículo Hotel Booking Demand Datasets (https://www.sciencedirect.com/science/article/pii/S2352340918315191), escrito por Nuno Antonio, Ana Almeida y Luis Nunes para Data in Brief, Volumen 22, febrero de 2019.
+
+Los datos fueron descargados y limpiados por Thomas Mock y Antoine Bichat para #TidyTuesday durante la semana del 11 de febrero de 2020 (https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-02-11/readme.md).
+
+Puedes aprender más sobre este conjunto de datos aquí:
+https://www.kaggle.com/jessemostipak/hotel-booking-demand
+
+Ejecuta el código que aparece debajo para cargar el archivo 'hotel_bookings.csv' en un marco de datos:
+
+```{r}
+hotel_bookings <- read.csv("hotel_bookings.csv")
+```
+
+## Paso 2: Refrescar la memoria
+
+A esta altura, ya estás bastante familiarizado con este conjunto de datos. Pero puedes refrescar tu memoria con las funciones `head()` y `colnames()`. Ejecuta los dos bloques de código debajo para obtener una muestra de los datos y, además, tener una vista previa los nombres de todas las columnas:
+
+```{r look at data}
+head(hotel_bookings)
+```
+
+```{r look at column names}
+colnames(hotel_bookings)
+```
+
+## Paso 3: Instalar y cargar el paquete 'ggplot2' (opcional)
+
+Ejecuta el bloque de código que aparece debajo para instalar y carga `ggplot2` si aún no lo instalaste y cargaste. ¡Esto puede tardar unos minutos!
+
+```{r loading and installing ggplot2, echo=FALSE, message=FALSE}
+install.packages('ggplot2')
+library(ggplot2)
+```
+
+## Paso 4: Hacer un gráfico de barras
+
+Anteriormente, usaste `geom_point` para hacer un diagrama de dispersión que comparaba el tiempo de antelación con el número de hijos. Ahora, usarás `geom_bar` para hacer un gráfico de barras en este bloque de código: 
+
+```{r example chart}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = distribution_channel))
+```
+
+## Cuestionario de práctica
+
+Usa el gráfico de barras que creaste para responder esta pregunta: ¿qué tipo de distribución tiene el número más alto de reservas? Anota tu respuesta y responde en la plataforma de Coursera.
+
+A: Agencia de viajes/Operador de viajes
+B: Directa
+C: Sistema de distribución global
+D: Corporativa
+Respuesta: A. El tipo de distribución Agencia de viajes/Operador de viajes tiene el número más alto de reservas.
+
+## Paso 5: Adentrarse más en los gráficos de barras
+
+Después de explorar tu gráfico de barras, tu interesado tiene más preguntas. Ahora quiere saber si el número de reservas para cada tipo de distribución es diferente dependiendo de si se realizó un depósito o de a qué mercado representan. 
+
+Intenta ejecutar el código que aparece a continuación para responder la pregunta sobre depósitos. Usarás 'fill=deposit_type' para lograrlo.
+
+```{r pressure, echo=FALSE}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = distribution_channel, fill=deposit_type))
+```
+
+Ahora intenta ejecutar el código que aparece a continuación para responder la pregunta sobre diferentes segmentos de mercado. Usarás 'fill=market_segment' para lograrlo.
+
+```{r pressure, echo=FALSE}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = distribution_channel, fill=market_segment))
+```
+## Paso 6: Facetas a granel
+
+Después de repasar los nuevos gráficos, tu interesado te pide que crees gráficos separados para cada tipo de depósito y segmento de mercado para ayudarlo a comprender las diferencias con mayor claridad.
+
+Ejecuta el bloque de código que aparece debajo para crear un gráfico diferente para cada tipo de depósito:
+```{r creating a plot}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = distribution_channel)) +
+  facet_wrap(~deposit_type)
+```
+
+Ejecuta el bloque de código que aparece debajo para crear un gráfico diferente para cada segmento de mercado:
+```{r creating a plot}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = distribution_channel)) +
+  facet_wrap(~market_segment)
+```
+
+La función `facet_grid` hace algo similar. La principal diferencia es que `facet_grid` incluye gráficos aunque estén vacíos. Ejecuta el bloque de código que aparece debajo para comprobarlo:
+
+```{r creating a plot}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = distribution_channel)) +
+  facet_grid(~deposit_type)
+```
+
+Ahora, puedes colocar todo esto en un gráfico y explorar las diferencias por tipo de depósito y segmento de mercado.
+
+Ejecuta el bloque de código que aparece debajo para averiguarlo; observa cómo el carácter ~ se usa antes de las variables por las que se divide el gráfico: 
+```{r creating a plot}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = distribution_channel)) +
+  facet_wrap(~deposit_type~market_segment)
+```

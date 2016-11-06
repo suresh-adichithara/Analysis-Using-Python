@@ -1,0 +1,152 @@
+---
+título: 'Lección 3: Filtros y diagramas'
+archivo de salida: html_document
+---
+
+## Contexto de esta actividad
+En esta actividad, repasarás un escenario y practicarás cómo crear una visualización de datos con ggplot2. Aprenderás a usar las funciones de filtros y facetas de ggplot2 para crear visualizaciones personalizadas basadas en diferentes criterios. 
+
+A lo largo de esta actividad, también tendrás la oportunidad de practicar escribir tu propio código haciendo cambios en los bloques de código tú mismo. Si encuentras un error o te trabas, siempre puedes consultar el archivo .rmd Lesson3_Filters_Solutions en la carpeta "Solutions" bajo "Week 4" para ver el código correcto completo. 
+
+## El escenario
+
+Como analista de datos junior en una empresa de reservas hoteleras, se te pidió que crees datos limpios de reservas de hoteles, crees visualizaciones con `ggplot2` para comprender mejor los datos y presentes diferentes facetas de los datos mediante la visualización. Ahora, vas a utilizar el trabajo que realizaste anteriormente para aplicar filtros a tus visualizaciones de datos en `ggplot2`.  
+
+## Paso 1: Importar los datos
+
+Si no saliste de RStudio desde que importaste estos datos la última vez, puedes saltearte estos pasos. Sin embargo, volver a ejecutar estos bloques de código no afectará tu consola si quieres ejecutarlos por las dudas.  
+
+Si esta línea provoca un error, copia la línea setwd("projects/Course 7/Week 4") antes de ella.
+
+Ejecuta el código que aparece debajo para cargar el archivo 'hotel_bookings.csv' en un marco de datos: 
+
+```{r load data}
+hotel_bookings <- read.csv("hotel_bookings.csv")
+```
+
+## Paso 2: Refrescar la memoria
+
+A esta altura, ya estás bastante familiarizado con este conjunto de datos. Pero puedes refrescar tu memoria con las funciones `head()` y `colnames()`. Ejecuta los dos bloques de código debajo para obtener una muestra de los datos y, además, tener una vista previa los nombres de todas las columnas:
+
+```{r look at data}
+head(hotel_bookings)
+```
+
+```{r look at column names}
+colnames(hotel_bookings)
+```
+
+## Paso 3: Instalar y cargar el paquete 'ggplot2' (opcional)
+
+Si todavía no instalaste y cargaste el paquete `ggplot2`, deberás hacerlo antes de poder usar la función `ggplot()`. Pero solo tienes que hacerlo una vez, no todas las veces que utilices `ggplot()`.
+
+También puedes saltearte este paso si no cerraste tu cuenta de RStudio desde que hiciste la última actividad. Si no estás seguro, puedes ejecutar el bloque de código y presionar 'cancel' si aparece el mensaje de advertencia que te dice que ya descargaste el paquete `ggplot2`.
+
+Ejecuta el bloque de código que aparece a continuación para instalar y cargar `ggplot2`. ¡Esto puede tardar unos minutos!
+
+```{r loading and installing ggplot2, echo=FALSE, message=FALSE}
+install.packages('ggplot2')
+library(ggplot2)
+```
+
+## Paso 4: Hacer muchos gráficos diferentes
+
+Antes, creaste un diagrama de dispersión para explorar la relación entre el tiempo de antelación de las reservas y los huéspedes que viajaban con niños. Como recordatorio, este es el código:
+
+```{r scatterplot}
+ggplot(data = hotel_bookings) +
+  geom_point(mapping = aes(x = lead_time, y = children))
+```
+
+Tu interesada preguntó acerca del grupo de huéspedes que normalmente reservan con mucha antelación y este diagrama mostró que muchos de estos huéspedes no tienen hijos. 
+
+Ahora, tu interesada quiere realizar una promoción para familias dirigida a segmentos clave del mercado. Ella quiere saber qué segmentos del mercado generan el mayor número de reservas y dónde se realizan estas reservas (hoteles de ciudad o hoteles tipo resort). 
+
+Primero, decides crear un gráfico de barras que muestre cada tipo de hotel y segmento del mercado. Usas diferentes colores para representar cada segmento del mercado: 
+
+```{r bar chart}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = hotel, fill = market_segment))
+```
+
+La función geom_bar() usa barras para crear un gráfico de barras. El gráfico tiene 'hotel' en el eje x, y 'count' en el eje y (nota: si no especificas una variable para el eje y, el código tiene 'count' como opción predeterminada). El código aplica la estética 'fill' a la variable 'market_segment' para generar secciones con códigos de color dentro de cada barra.  
+
+Después de crear este gráfico de barras, te das cuenta de que es difícil comparar el tamaño de los segmentos de mercado en la parte superior de las barras. Lo que buscas es que tu interesada pueda comparar con claridad cada segmento.   
+
+Decides usar la función facet_wrap() para crear un gráfico diferente para cada segmento del mercado. Dentro de los paréntesis de la función facet_wrap(), agrega la variable 'market_segment' después del símbolo de virgulilla (~):
+
+```{r faceting a plot}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = hotel)) +
+  facet_wrap(~)
+```
+
+Ahora tienes un gráfico de barras separado para cada segmento de mercado. Tu interesada tiene una idea más clara del tamaño de cada segmento de mercado, así como también los datos correspondientes a cada tipo de hotel.
+
+## Paso 5: Filtrar
+
+Para el siguiente paso, necesitarás tener cargado e instalado el paquete `tidyverse`. Quizás veas una ventana emergente que te pregunta si quieres instalar; de ser así, haz clic en 'Install'. ¡Esto puede tardar unos minutos!
+
+Si ya lo hiciste porque estás usando el paquete `tidyverse` por tu cuenta, puedes saltearte este bloque de código.
+
+```{r install and download tidyverse}
+install.packages('tidyverse')
+library(tidyverse)
+```
+
+Después de analizar todos los datos, tu interesada decide enviar la promoción a familias que realizan reservas de hoteles urbanos en línea. El segmento en línea es el de crecimiento más acelerado, y las familias tienden a gastar más en hoteles urbanos que otros tipos de huéspedes. 
+
+Tu interesada te pide si puedes crear un gráfico que muestre la relación entre el tiempo de antelación de la reserva y los huéspedes que viajan con niños para las reservas en línea de los hoteles urbanos. Esto le dará una mejor idea del mejor momento para realizar la promoción. 
+
+Lo analizas y te das cuenta de que tienes todas las herramientas que necesitas para cumplir con su pedido. Lo divides en estos dos pasos: 1) filtrar tus datos; 2) graficar tus datos filtrados. 
+
+Para el primer paso, puedes usar la función `filter()` para crear un conjunto de datos que solo incluya los datos que quieres. Ingresa 'City Hotel' dentro de las primeras comillas y 'Online TA' en las segundas comillas para especificar tus criterios: 
+
+```{r filtering a dataset to just city hotels that are online TA}
+onlineta_city_hotels <- filter(hotel_bookings, 
+                           (hotel=="" &
+                             hotel_bookings$market_segment==""))
+```
+
+Ahora puedes usar el carácter '&' para demostrar que quieres que dos condiciones diferentes sean verdaderas. Además, puedes usar el carácter '$' para especificar a qué columna del marco de datos 'hotel_bookings' haces referencia (por ejemplo, 'market_segment'). 
+
+Puedes usar la función `View`() para ver tu nuevo marco de datos:
+
+```{r View}
+View(onlineta_city_hotels)
+```
+
+Además, existe otra manera de hacerlo. ¡Puedes usar el operador de canalización (%>%) para hacerlo en pasos! 
+
+Nombras a este marco de datos como `onlineta_city_hotels_v2`:
+
+```{r filtering a dataset with the pipe}
+onlineta_city_hotels_v2 <- hotel_bookings %>%
+  filter(hotel=="City Hotel") %>%
+  filter(market_segment=="Online TA")
+```
+
+Observa cómo, en el bloque de código de arriba, el símbolo %>% se usa para indicar los pasos lógicos de este código. Primero, comienza con el nombre del marco de datos, `onlineta_city_hotels_v2`, Y DESPUÉS le indica a `R` que comience con el marco de datos original `hotel_bookings`. Luego, le indica que filtre en la columna 'hotel'; por último, le indica que filtre por la columna 'market_segment'.
+
+Este bloque de código genera el mismo marco de datos usando la función `View()`:
+
+```{r view second dataframe}
+View(onlineta_city_hotels_v2)
+```
+
+## Paso 6: Usar tu nuevo marco de datos
+
+Puedes usar cualquiera de los marcos de datos que creaste arriba para tus nuevos gráficos porque son lo mismo. 
+
+Usando el código de tu diagrama de dispersión anterior, reemplaza `variable_name` en el bloque de código por `onlineta_city_hotels` o `onlineta_city_hotels_v2` para graficar los datos que tu interesada solicitó:
+
+```{r creating a plot part two}
+ggplot(data = variable_name) +
+  geom_point(mapping = aes(x = lead_time, y = children))
+```
+
+Con base en tu filtro anterior, este diagrama de dispersión muestra datos de reservas en línea para hoteles urbanos. El diagrama revela que las reservas con niños tienden a tener un tiempo de antelación inferior y las reservas con 3 niños tienen un tiempo de antelación significativamente inferior (<200 días). Por lo tanto, las promociones dirigidas a familias pueden realizarse más cerca de las fechas de reserva válidas.  
+
+## Conclusión de la actividad
+
+Los filtros te permiten crear diferentes visualizaciones de tus datos y te permiten investigar relaciones más específicas dentro de tus datos. Puedes practicar estas destrezas modificando los bloques de código en el archivo rmd o usar este código como punto de partida en la consola de tu propio proyecto. Ahora que tu interesada tuvo la oportunidad de revisar estos gráficos, desea agregar anotaciones que pueda usar para explicar los datos en una presentación. Afortunadamente, `ggplot2` tiene una función que te permitirá hacer precisamente eso. ¡Aprenderás más acerca de `ggplot2` en la próxima actividad! 

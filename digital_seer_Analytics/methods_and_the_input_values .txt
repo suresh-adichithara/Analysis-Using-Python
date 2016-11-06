@@ -1,0 +1,69 @@
+1.     Details for the Digital_Seer_day_Efficiency
+
+                 method
+
+
+input:
+
+     day_efficiency({"assetName":"SEZ-Building2"},{"periodEnd":"2017-12-10"})
+
+
+
+output:
+--------------------------------------------------------------------------------------
+
+Access Links:
+
+
+
+
+#####################################################################################
+
+2.     Details for the Digital_Seer_Half_Hour_Efficiency
+	( This analytics has to be scheduled for every 30 mins )
+	
+	              method 
+
+input:
+	
+	half_hour_efficiency({"periodEnd":"2017-12-11"})
+
+
+output:
+
+------------------------------------------------------------------------------------
+
+Access Links:
+
+
+	
+	
+#####################################################################################
+
+3.      Deatils for the Digital_Seer_Polynomial_Function
+
+	(This analytics traces out a curve to fit the given points)
+	
+	              method
+input:	
+	
+	polynomial({"periodEnd":"2017-12-11","start":157,"stop":600})
+
+
+
+
+output:
+
+
+
+--------------------------------------------------------------------------------------
+
+Access Links:
+
+
+
+	
+#######################################################################################
+	
+	
+
